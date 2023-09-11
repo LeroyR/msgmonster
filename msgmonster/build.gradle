@@ -13,11 +13,11 @@ eclipse.classpath.file {
 }
 
 dependencies {
-    implementation 'io.github.lambdaprime:id.xfunction:19.0-SNAPSHOT'
+    implementation 'io.github.lambdaprime:id.xfunction:19.0'
     implementation 'org.ainslec:picocog:1.0.7'
 
     // transitively export following dependency to tests project
-    apiElements 'io.github.lambdaprime:id.xfunction:19.0-SNAPSHOT'
+    apiElements 'io.github.lambdaprime:id.xfunction:19.0'
     apiElements 'org.ainslec:picocog:1.0.7'
 }
 
