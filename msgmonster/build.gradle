@@ -1,15 +1,8 @@
 plugins {
     id 'java'
     id 'com.diffplug.spotless'
-}
-
-apply plugin : 'eclipse'
-
-eclipse.classpath.file {
-    // instruct eclipse plugin to put everything to module path
-    whenMerged {
-        entries.findAll { it.kind == 'lib' }.each { it.entryAttributes['module'] = 'true' }
-    }
+    id 'maven-publish'
+    id 'application'
 }
 
 dependencies {
@@ -26,6 +19,11 @@ jar {
         attributes 'Implementation-Version': "${rootProject.version}",
                    'Main-Class': 'id.msgmonster.app.MsgmonsterApp'
     }
+}
+
+application {
+    mainModule = 'id.msgmonster.app' // name defined in module-info.java
+    mainClass = 'id.msgmonster.app.MsgmonsterApp'
 }
 
 def packageDir = "$buildDir/package/${projectName}"
@@ -62,6 +60,10 @@ task cleanRelease(type: Delete) {
     delete "$projectDir/release"
 }
 
+installDist {
+    destinationDir rootProject.file("build/install")
+}
+
 compileJava.dependsOn copyReadme
 createRelease.dependsOn createPackage
 assemble.dependsOn createRelease
@@ -70,3 +72,24 @@ processResources.dependsOn copyReadme
 
 // run spotless and format code before the build
 classes.dependsOn spotlessApply
+
+String mavenDeploymentRepository = System.getenv("ROS_MAVEN_DEPLOYMENT_REPOSITORY")
+if (mavenDeploymentRepository != null &&
+    mavenDeploymentRepository != "") {
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = 'pinorobotics'
+                from components.java
+                artifact distZip
+            }
+        }
+        repositories {
+            maven {
+                url 'file://' + mavenDeploymentRepository
+            }
+        }
+    }
+} else {
+    logger.error("ROS_MAVEN_DEPLOYMENT_REPOSITORY is not set. Have you sourced setup.bash?")
+}
