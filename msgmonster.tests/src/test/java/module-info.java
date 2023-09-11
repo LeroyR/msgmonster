@@ -20,7 +20,6 @@
  */
 open module msgmonster.tests {
     requires id.xfunction;
-    requires id.xfunctiontests;
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;
     requires msgmonster;
